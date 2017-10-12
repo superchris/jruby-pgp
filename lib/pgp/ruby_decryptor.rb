@@ -1,13 +1,16 @@
 module PGP
   class RubyDecryptor
     include_package "org.bouncycastle.openpgp"
+    include_package "org.bouncycastle.openpgp.jcajce"
+    java_import "org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder"
+    java_import "org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator"
 
     java_import 'java.io.ByteArrayOutputStream'
 
     def self.decrypt(encrypted_text, private_key_file)
       bytes = PGP.string_to_bais(encrypted_text)
       dec_s = PGPUtil.get_decoder_stream(bytes)
-      pgp_f = PGPObjectFactory.new(dec_s)
+      pgp_f = JcaPGPObjectFactory.new(dec_s)
 
       enc_data = pgp_f.next_object
       enc_data = pgp_f.next_object unless PGPEncryptedDataList === enc_data
@@ -30,14 +33,13 @@ module PGP
         end
       end
 
-      clear = pbe.get_data_stream(sec_key, BC_Provider_Code)
-
-      plain_fact = PGPObjectFactory.new(clear)
+      clear = pbe.get_data_stream(JcePublicKeyDataDecryptorFactoryBuilder.new.set_provider("BC").build(sec_key))
+      plain_fact = JcaPGPObjectFactory.new(clear)
 
       message = plain_fact.next_object
 
       if(PGPCompressedData === message)
-        pgp_fact  = PGPObjectFactory.new(message.get_data_stream)
+        pgp_fact  = JcaPGPObjectFactory.new(message.get_data_stream)
         message   = pgp_fact.next_object
       end
 

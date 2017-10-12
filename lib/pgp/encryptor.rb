@@ -1,6 +1,7 @@
 module PGP
   class Encryptor < org.sgonyea.pgp.Encryptor
     include_package "org.bouncycastle.openpgp"
+    java_import "org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator"
 
     def initialize(key_string=nil)
       super()
@@ -61,7 +62,7 @@ module PGP
 
     def keyring_from_stream(stream)
       yafs = PGPUtil.get_decoder_stream(stream)
-      PGPPublicKeyRingCollection.new(yafs)
+      PGPPublicKeyRingCollection.new(yafs, JcaKeyFingerprintCalculator.new)
     end
 
   end

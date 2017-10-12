@@ -18,16 +18,14 @@ describe PGP::CLI do
   describe 'Encrypting' do
     it "should encrypt a given file to the given public key" do
       PGP::CLI::Runner.go!([decrypted_file, "-p", "spec/support/fixtures/public_key.asc"])
-
-      File.exist?('unencrypted_file.txt.gpg').should be_true
+      File.exist?('unencrypted_file.txt.gpg').should be_truthy
     end
   end
 
   describe 'Decrypting' do
     it "should decrypt a given file to the given private key" do
       PGP::CLI::Runner.go!([encrypted_file, "-P", "spec/support/fixtures/private_key.asc", "-d"])
-
-      File.exist?('unencrypted_file.txt').should be_true
+      File.exist?('unencrypted_file.txt').should be_truthy
     end
   end
 

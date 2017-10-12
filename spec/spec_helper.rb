@@ -1,6 +1,7 @@
 require 'rspec'
 require 'bundler'
 require 'jruby-pgp'
+require 'pry'
 
 Fixtures_Path = Bundler.root + 'spec/support/fixtures/'
 
